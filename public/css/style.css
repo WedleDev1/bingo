@@ -1,0 +1,161 @@
+body {
+    font-family: 'Roboto', sans-serif;
+    background-color: #f4f4f9;
+    color: #242424;
+}
+
+header {
+    background-color: #6200ea;
+    padding: 10px;
+    text-align: center;
+    color: white;
+}
+
+nav {
+    background-color: #242424;
+}
+
+nav ul {
+    list-style-type: none;
+    padding: 0;
+}
+
+nav ul li {
+    display: inline;
+    margin: 0 10px;
+}
+
+main {
+    padding: 20px;
+}
+
+button {
+    background-color: #6200ea;
+    color: white;
+    padding: 10px;
+    border: none;
+    border-radius: 5px;
+}
+
+.numeros-sorteados {
+    display: flex;
+    flex-wrap: wrap;
+}
+
+.numeros-sorteados span {
+    background-color: #008c80;
+    color: white;
+    padding: 5px 10px;
+    margin: 5px;
+    border-radius: 5px;
+    font-size: 1.5em;
+}
+
+.brand-logo {
+    font-weight: bold;
+}
+
+.container {
+    margin-top: 20px;
+}
+
+.card {
+    border-radius: 12px;
+}
+
+.card-panel {
+    background-color: #fafafa;
+    border-radius: 12px;
+    padding: 20px;
+}
+
+.card h6 {
+    font-weight: bold;
+    font-size: 1.2em;
+}
+
+.animated-bounce {
+    display: inline-block;
+    margin: 3px;
+    background-color: #ffffff;
+    color: #000000;
+    border-radius: 50%;
+    width: 45px;
+    height: 45px;
+    font-size: 1.5em;
+    line-height: 45px;
+    text-align: center;
+    border: 2px solid rgb(0, 0, 0)/* Adicionando uma borda simples */
+}
+
+#bolas-sorteadas {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-evenly;
+    padding: 10px;
+    margin-top: 10px;
+}
+
+.animated-bounce {
+    animation: bounce 0.6s ease-in-out;
+}
+
+@keyframes bounce {
+    0% {
+        transform: translateY(0);
+    }
+    50% {
+        transform: translateY(-15px);
+    }
+    100% {
+        transform: translateY(0);
+    }
+}
+
+
+.btn-large {
+    width: 100%;
+    border-radius: 12px;
+    font-weight: bold;
+    margin-top: 10px;
+}
+
+
+.stats {
+    font-size: 1.1em;
+    font-weight: bold;
+}
+
+footer.page-footer {
+    background-color: #242424;
+    color: white;
+    padding-top: 20px;
+    padding-bottom: 30px;
+}
+
+footer.page-footer .row {
+    display: flex;
+    align-items: center; /* Alinha verticalmente no centro */
+    justify-content: space-between; /* Espaço entre a logo e os links */
+}
+
+footer.page-footer ul {
+    display: flex;
+    gap: 15px; /* Espaço entre os links */
+}
+
+footer.page-footer ul li {
+    list-style: none; /* Remove o estilo de lista (bolinhas) */
+}
+
+footer.page-footer ul li a {
+    color: white;
+    text-decoration: none; /* Remove o sublinhado dos links */
+    font-family: 'Roboto', sans-serif;
+}
+
+@media only screen and (max-width: 600px) {
+    footer.page-footer {
+        margin-bottom: 50px; 
+    }
+}

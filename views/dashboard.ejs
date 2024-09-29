@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bingo Online - Painel</title>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/css/materialize.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="/css/style.css">
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+    <style>
+        body, html {
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+        }
+        main {
+            flex: 1;
+        }
+        .footer-logo {
+            max-width: 150px;
+        }
+        .page-footer {
+            background-color: #212121;
+            padding-top: 20px;
+            padding-bottom: 10px;
+        }
+        .page-footer a {
+            color: #fff;
+        }
+        nav {
+            background-color: #212121;
+        }
+        .brand-logo {
+            font-weight: bold;
+        }
+        .stats p {
+            font-size: 1.2rem;
+            font-weight: 500;
+        }
+        .card-panel {
+            padding: 20px;
+            border-radius: 8px;
+        }
+        .input-field input {
+            margin-bottom: 20px;
+        }
+        @media (max-width: 600px) {
+            .footer-logo {
+                max-width: 100px;
+            }
+            .page-footer .col {
+                text-align: center;
+            }
+            .page-footer ul {
+                display: inline-flex;
+            }
+        }
+    </style>
+    <script src="/socket.io/socket.io.js"></script>
+</head>
+<body>
+    <nav>
+        <div class="nav-wrapper">
+            <a href="#" class="brand-logo center">Bingo Online</a>
+        </div>
+    </nav>
+
+    <main>
+        <div class="container">
+            <div class="row">
+                <div class="col s12">
+                    <div class="card-panel center-align z-depth-2">
+                        <h5>Cartelas e Jogadores</h5>
+                        <div class="stats">
+                            <p>Cartelas Vendidas: <span id="cartelas-vendidas">0</span></p>
+                            <p>Jogadores Online: <span id="jogadores-online">0</span></p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <% if (message) { %>
+                <div class="card-panel teal lighten-2 white-text center-align">
+                    <%= message %>
+                </div>
+            <% } %>
+
+            <div class="row">
+                <div class="col s12 m6">
+                    <div class="card-panel z-depth-2">
+                        <h5 class="center-align">Comprar Cartelas</h5>
+                        <form action="/apostar" method="POST">
+                            <div class="input-field">
+                                <input type="number" id="quantidade" name="quantidade" min="1" required>
+                                <label for="quantidade">Número de Cartelas</label>
+                            </div>
+                            <button class="btn-large waves-effect waves-light grey darken-4" type="submit">
+                                Comprar Cartelas
+                            </button>
+                        </form>
+                    </div>
+                </div>
+
+                <div class="col s12 m6">
+                    <div class="card-panel z-depth-2">
+                        <h5 class="center-align">Bolas Sorteadas</h5>
+                        <h6 class="center-align">Total: <span id="num-bolas-sorteadas">0</span> de 90</h6>
+                        <div id="bolas-sorteadas" class="center-align"></div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col s12">
+                    <div class="card-panel z-depth-2">
+                        <h5 class="center-align">Vencedores</h5>
+                        <ul id="lista-vencedores" class="collection">
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <footer class="page-footer">
+        <div class="container">
+            <div class="row" style="display: flex; align-items: center; justify-content: space-between;">
+                <div class="col l6 s12">
+                    <img src="https://dashboard.games2api.com/public/assets/images/logo-novo2.png" alt="Logo Bingo Online" class="footer-logo responsive-img">
+                </div>
+                <div class="col l6 s12">
+                    <ul class="right hide-on-small-only">
+                        <li><a href="#!">Termos</a></li>
+                        <li><a href="#!">Política</a></li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col s12">
+                    <p class="center-align">Gambling can be addictive. Please play responsibly. BingoOnline only accepts customers over 18 years of age.</p>
+                    <p class="grey-text text-lighten-4 center-align">© 2024 Bingo Online - Todos os direitos reservados.</p>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/js/materialize.min.js"></script>
+
+    <script>
+        const socket = io();
+
+        const bolasContainer = document.getElementById('bolas-sorteadas');
+        const numBolasSorteadasEl = document.getElementById('num-bolas-sorteadas');
+        const cartelasVendidasEl = document.getElementById('cartelas-vendidas');
+        const jogadoresOnlineEl = document.getElementById('jogadores-online');
+        const listaVencedoresEl = document.getElementById('lista-vencedores');
+
+        socket.on('nova-bola', (bola, quantidade) => {
+            const span = document.createElement('span');
+            span.classList.add('animated-bounce');
+            span.innerText = bola;
+
+            span.style.transform = "scale(1.5)";
+            setTimeout(() => {
+                span.style.transform = "scale(1)";
+            }, 300);
+
+            bolasContainer.appendChild(span);
+            numBolasSorteadasEl.innerText = quantidade;
+        });
+
+        socket.on('atualizar-cartelas-vendidas', (cartelasVendidas) => {
+            cartelasVendidasEl.innerText = cartelasVendidas;
+        });
+
+        socket.on('atualizar-jogadores-online', (jogadoresOnline) => {
+            jogadoresOnlineEl.innerText = jogadoresOnline;
+        });
+
+        socket.on('atualizar-vencedores', (vencedores) => {
+            listaVencedoresEl.innerHTML = ''; 
+            vencedores.forEach(vencedor => {
+                const li = document.createElement('li');
+                li.classList.add('collection-item');
+                li.innerText = `Nome: ${vencedor.nome} - Prêmio: R$${vencedor.premio}`;
+                listaVencedoresEl.appendChild(li);
+            });
+        });
+
+        socket.on('sorteio-encerrado', () => {
+            M.toast({html: 'Sorteio Encerrado! Todas as bolas foram sorteadas.', classes: 'rounded'});
+        });
+    </script>
+</body>
+</html>
