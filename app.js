@@ -18,6 +18,8 @@ let sorteioAtivo = false;
 let jogadoresOnline = 0;
 let cartelasVendidas = 0;
 let vencedores = [];
+let tempoDeCompra = 60; 
+let tempoRestante = tempoDeCompra; 
 
 function gerarVencedores() {
     return [
@@ -25,6 +27,7 @@ function gerarVencedores() {
         { nome: 'Maria', premio: 300 },
     ];
 }
+
 
 function iniciarSorteio() {
     if (!sorteioAtivo) {
@@ -50,10 +53,25 @@ function iniciarSorteio() {
     }
 }
 
+function iniciarTempoDeCompra() {
+    const intervaloCompra = setInterval(() => {
+        if (tempoRestante <= 0) {
+            clearInterval(intervaloCompra);
+            io.emit('compra-encerrada');
+            iniciarSorteio(); 
+        } else {
+            tempoRestante--;
+            io.emit('atualizar-tempo-compra', tempoRestante); 
+        }
+    }, 1000);
+}
+
+
 app.get('/', (req, res) => {
     const message = req.query.message || null;
     res.render('dashboard', { saldo, message });
 });
+
 
 app.post('/apostar', (req, res) => {
     const quantidade = parseInt(req.body.quantidade);
@@ -68,23 +86,22 @@ app.post('/apostar', (req, res) => {
     res.redirect(`/?message=Você+comprou+${quantidade}+cartelas+com+sucesso!`);
 });
 
+
 io.on('connection', (socket) => {
     jogadoresOnline++;
     io.emit('atualizar-jogadores-online', jogadoresOnline);  
+    io.emit('atualizar-cartelas-vendidas', cartelasVendidas);  
+    socket.emit('atualizar-tempo-compra', tempoRestante); 
 
-    if (!sorteioAtivo) {
-        iniciarSorteio();
-    } else {
-        bolasSorteadas.forEach((bola, index) => {
-            socket.emit('nova-bola', bola, index + 1);
-        });
-    }
-
+    // Desconexão do usuário
     socket.on('disconnect', () => {
         jogadoresOnline--;
         io.emit('atualizar-jogadores-online', jogadoresOnline);
     });
 });
+
+
+iniciarTempoDeCompra();
 
 const PORT = process.env.PORT || 3000;
 server.listen(PORT, () => {
